@@ -49,6 +49,34 @@
         .breadcrumb { margin-bottom: 20px; color: #888; font-size: 13px; }
         .breadcrumb a { color: #27ae60; text-decoration: none; }
         
+        /* Enhanced navigation bar */
+        .navbar { background: white; border-bottom: 2px solid #27ae60; padding: 15px 0; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .breadcrumb-nav { display: flex; align-items: center; gap: 10px; max-width: 1200px; margin: 0 auto; padding: 0 20px; font-size: 14px; }
+        .breadcrumb-nav a { color: #27ae60; text-decoration: none; font-weight: 500; transition: all 0.3s ease; padding: 5px 10px; border-radius: 4px; }
+        .breadcrumb-nav a:hover { background: #ecf0f1; color: #229954; }
+        .breadcrumb-nav .separator { color: #bbb; margin: 0 5px; }
+        .breadcrumb-nav .active { color: #2c3e50; font-weight: 600; }
+        
+        /* Improved filter section */
+        .filter-section { background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%); padding: 30px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #27ae60; }
+        .filter-section h2 { margin-bottom: 20px; color: #2c3e50; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .filter-section h2::before { content: "📅"; }
+        
+        .filter-form { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 8px; font-weight: 600; color: #2c3e50; font-size: 14px; }
+        .form-group input { padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px; transition: all 0.3s ease; background: white; }
+        .form-group input:focus { outline: none; border-color: #27ae60; box-shadow: 0 0 8px rgba(39, 174, 96, 0.15); }
+        .form-group input::placeholder { color: #bbb; }
+        
+        .filter-actions { display: flex; gap: 10px; }
+        .filter-actions button { padding: 12px 30px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(39, 174, 96, 0.2); }
+        .filter-actions button:hover { background: #229954; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3); }
+        .filter-actions button:active { transform: translateY(0); }
+        
+        .reset-btn { background: #95a5a6 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; }
+        .reset-btn:hover { background: #7f8c8d !important; }
+        
         footer { margin-top: 40px; padding: 20px; text-align: center; color: #888; font-size: 12px; }
     </style>
 </head>
@@ -56,14 +84,18 @@
     <header>
         <div class="container">
             <h1>Jamin Bedrijf</h1>
-            <a href="/">← Terug naar Home</a>
         </div>
     </header>
 
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="/">Home</a> / Overzicht Geleverde Producten
+    <nav class="navbar">
+        <div class="breadcrumb-nav">
+            <a href="/" title="Terug naar homepagina">🏠 Home</a>
+            <span class="separator">/</span>
+            <span class="active">📦 Overzicht Geleverde Producten</span>
         </div>
+    </nav>
+
+    <div class="container">
 
         @if ($errors->any())
             <div class="error">
@@ -75,19 +107,20 @@
 
         <!-- WIREFRAME 02: Filter Form -->
         <div class="filter-section">
-            <h2>Filter op Datum</h2>
+            <h2>Datumfilter</h2>
             <form method="GET" action="{{ route('producten.index') }}">
-                <div style="display: flex; gap: 20px; align-items: flex-end;">
-                    <div class="form-group">
-                        <label for="startDate">Startdatum (dd-mm-yyyy)</label>
-                        <input type="text" id="startDate" name="startDate" placeholder="dd-mm-yyyy" value="{{ old('startDate', $startDate) }}">
+                <div class="filter-form">
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="startDate">📅 Startdatum</label>
+                        <input type="text" id="startDate" name="startDate" placeholder="dd-mm-yyyy (bijv. 01-04-2023)" value="{{ old('startDate', $startDate) }}" title="Voer datum in formaat dd-mm-yyyy in">
                     </div>
-                    <div class="form-group">
-                        <label for="endDate">Einddatum (dd-mm-yyyy)</label>
-                        <input type="text" id="endDate" name="endDate" placeholder="dd-mm-yyyy" value="{{ old('endDate', $endDate) }}">
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="endDate">📅 Einddatum</label>
+                        <input type="text" id="endDate" name="endDate" placeholder="dd-mm-yyyy (bijv. 30-04-2023)" value="{{ old('endDate', $endDate) }}" title="Voer datum in formaat dd-mm-yyyy in">
                     </div>
-                    <div class="form-group">
-                        <button type="submit">Maak Selectie</button>
+                    <div class="filter-actions">
+                        <button type="submit">✓ Zoeken</button>
+                        <button type="button" class="reset-btn" onclick="window.location='{{ route('producten.index') }}'" title="Filter verwijderen">Alles Weergeven</button>
                     </div>
                 </div>
             </form>

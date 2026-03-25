@@ -31,9 +31,19 @@ class ProductLeveringController extends Controller
             try {
                 $dateStart = \DateTime::createFromFormat('d-m-Y', $startDateInput);
                 $dateEnd = \DateTime::createFromFormat('d-m-Y', $endDateInput);
+
+                // Also support yyyy-mm-dd input format
+                if (!$dateStart || !$dateEnd) {
+                    $dateStart = \DateTime::createFromFormat('Y-m-d', $startDateInput);
+                    $dateEnd = \DateTime::createFromFormat('Y-m-d', $endDateInput);
+                }
                 
                 if (!$dateStart || !$dateEnd) {
                     throw new \Exception('Invalid date format');
+                }
+
+                if ($dateStart > $dateEnd) {
+                    throw new \Exception('Start date is after end date');
                 }
                 
                 $startDate = $dateStart->format('Y-m-d');
@@ -48,14 +58,9 @@ class ProductLeveringController extends Controller
                 $products = collect($allProducts);
                 $totalResults = $products->count();
                 $hasResults = $totalResults > 0;
-                
-                if (!$hasResults) {
-                    // Scenario 03: No results found
-                    return redirect()->route('producten.index');
-                }
             } catch (\Exception $e) {
                 return redirect()->back()
-                    ->withErrors('Ongeldige datumformat. Gebruik dd-mm-yyyy');
+                    ->withErrors('Ongeldige datuminvoer. Gebruik dd-mm-yyyy of yyyy-mm-dd en controleer dat de startdatum niet na de einddatum ligt.');
             }
         } else {
             // Initial load: Get all products ever delivered (sorted A-Z by Leverancier)
@@ -129,17 +134,17 @@ class ProductLeveringController extends Controller
         }
 
         // Get product info from database
-        $product = DB::table('product_per_leveranciers')
+        $product = DB::table('ProductPerLeverancier')
             ->select(
-                'product_per_leveranciers.ProductId as Id',
-                'products.Naam',
-                'products.Barcode',
-                'leveranciers.Naam as LeverancierNaam'
+                'ProductPerLeverancier.ProductId as Id',
+                'Product.Naam',
+                'Product.Barcode',
+                'Leverancier.Naam as LeverancierNaam'
             )
-            ->join('products', 'product_per_leveranciers.ProductId', '=', 'products.Id')
-            ->join('leveranciers', 'product_per_leveranciers.LeverancierId', '=', 'leveranciers.Id')
-            ->where('product_per_leveranciers.ProductId', $productId)
-            ->where('products.IsActief', 1)
+            ->join('Product', 'ProductPerLeverancier.ProductId', '=', 'Product.Id')
+            ->join('Leverancier', 'ProductPerLeverancier.LeverancierId', '=', 'Leverancier.Id')
+            ->where('ProductPerLeverancier.ProductId', $productId)
+            ->where('Product.IsActief', 1)
             ->first();
 
         if (!$product) {

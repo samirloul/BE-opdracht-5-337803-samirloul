@@ -1,7 +1,13 @@
 <?php
 
-use App\Http\Controllers\JoinDemoController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductLeveringController;
 
-Route::get('/', [JoinDemoController::class, 'index']);
-Route::get('/joins', [JoinDemoController::class, 'index']);
+// Homepage
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// User Story 01: Overzicht Geleverde Producten (3 Scenarios)
+Route::get('/producten', [ProductLeveringController::class, 'index'])->name('producten.index');
+Route::get('/producten/specificatie', [ProductLeveringController::class, 'specification'])->name('producten.specification');

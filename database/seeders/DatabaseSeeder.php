@@ -15,9 +15,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable foreign key checks for truncation
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        
         DB::table('enrollments')->truncate();
         DB::table('students')->truncate();
         DB::table('courses')->truncate();
+        
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         DB::table('students')->insert([
             ['student_number' => 'S1001', 'name' => 'Anna Jansen', 'email' => 'anna@example.com', 'created_at' => now(), 'updated_at' => now()],

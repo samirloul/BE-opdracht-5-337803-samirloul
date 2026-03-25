@@ -17,6 +17,14 @@
         .breadcrumb { margin-bottom: 20px; color: #888; font-size: 13px; }
         .breadcrumb a { color: #27ae60; text-decoration: none; }
         
+        /* Enhanced navigation bar */
+        .navbar { background: white; border-bottom: 2px solid #27ae60; padding: 15px 0; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .breadcrumb-nav { display: flex; align-items: center; gap: 10px; max-width: 1200px; margin: 0 auto; padding: 0 20px; font-size: 14px; }
+        .breadcrumb-nav a { color: #27ae60; text-decoration: none; font-weight: 500; transition: all 0.3s ease; padding: 5px 10px; border-radius: 4px; }
+        .breadcrumb-nav a:hover { background: #ecf0f1; color: #229954; }
+        .breadcrumb-nav .separator { color: #bbb; margin: 0 5px; }
+        .breadcrumb-nav .active { color: #2c3e50; font-weight: 600; }
+        
         .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #f5c6cb; }
         
         .detail-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -50,14 +58,20 @@
     <header>
         <div class="container">
             <h1>Jamin Bedrijf</h1>
-            <a href="{{ route('producten.index') }}">← Terug naar Overzicht</a>
         </div>
     </header>
 
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="/">Home</a> / <a href="{{ route('producten.index') }}">Overzicht</a> / Specificatie
+    <nav class="navbar">
+        <div class="breadcrumb-nav">
+            <a href="/" title="Terug naar homepagina">🏠 Home</a>
+            <span class="separator">/</span>
+            <a href="{{ route('producten.index') }}" title="Terug naar overzicht">📦 Overzicht Geleverde Producten</a>
+            <span class="separator">/</span>
+            <span class="active">📋 Productspecificatie</span>
         </div>
+    </nav>
+
+    <div class="container">
 
         @if ($errors->any())
             <div class="error">
@@ -128,7 +142,7 @@
                                 <tr>
                                     <td>{{ $delivery->LeverancierNaam }}</td>
                                     <td><strong>{{ $delivery->Aantal }}</strong> stuks</td>
-                                    <td>{{ $delivery->VerpakkingsEenheid }}</td>
+                                    <td>{{ property_exists($delivery, 'VerpakkingsEenheid') ? $delivery->VerpakkingsEenheid : '-' }}</td>
                                     <td>
                                         @php
                                             $date = \DateTime::createFromFormat('Y-m-d', $delivery->DatumLevering);
