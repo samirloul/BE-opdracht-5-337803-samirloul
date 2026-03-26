@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Specificatie Product - Jamin</title>
+    <title>Specificatie geleverde producten</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
@@ -14,32 +14,21 @@
         header a { color: white; text-decoration: none; margin-right: 20px; padding: 8px 12px; background: rgba(255,255,255,0.1); border-radius: 4px; }
         header a:hover { background: rgba(255,255,255,0.2); }
         
-        .breadcrumb { margin-bottom: 20px; color: #888; font-size: 13px; }
-        .breadcrumb a { color: #27ae60; text-decoration: none; }
-        
-        /* Enhanced navigation bar */
-        .navbar { background: white; border-bottom: 2px solid #27ae60; padding: 15px 0; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .breadcrumb-nav { display: flex; align-items: center; gap: 10px; max-width: 1200px; margin: 0 auto; padding: 0 20px; font-size: 14px; }
-        .breadcrumb-nav a { color: #27ae60; text-decoration: none; font-weight: 500; transition: all 0.3s ease; padding: 5px 10px; border-radius: 4px; }
-        .breadcrumb-nav a:hover { background: #ecf0f1; color: #229954; }
-        .breadcrumb-nav .separator { color: #bbb; margin: 0 5px; }
-        .breadcrumb-nav .active { color: #2c3e50; font-weight: 600; }
+        .breadcrumb { margin-bottom: 20px; color: #555; font-size: 14px; }
+        .breadcrumb a { color: #2c3e50; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
         
         .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; border-left: 4px solid #f5c6cb; }
         
         .detail-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .detail-section h2 { color: #2c3e50; margin-bottom: 15px; border-bottom: 2px solid #27ae60; padding-bottom: 10px; }
+        .detail-section h2 { color: #2c3e50; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
         
         .product-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
         .info-row { }
         .info-label { font-weight: bold; color: #555; margin-bottom: 5px; }
         .info-value { color: #333; font-size: 15px; }
         
-        .allergens { background: #fff9e6; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #f39c12; }
-        .allergens h4 { color: #e67e22; margin-bottom: 10px; }
-        .allergen-list { display: flex; gap: 10px; flex-wrap: wrap; }
-        .allergen-badge { display: inline-block; background: #f39c12; color: white; padding: 5px 12px; border-radius: 20px; font-size: 13px; }
-        .no-allergens { color: #27ae60; font-weight: bold; }
+        .allergens { margin-top: 8px; font-size: 15px; }
         
         table { width: 100%; border-collapse: collapse; }
         th { background: #34495e; color: white; padding: 12px; text-align: left; font-weight: bold; }
@@ -50,6 +39,14 @@
         .back-link:hover { background: #2c3e50; }
         
         .no-deliveries { text-align: center; color: #888; padding: 30px; }
+
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; }
+        .pagination a, .pagination span { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #2c3e50; }
+        .pagination a:hover { background: #2c3e50; color: #fff; }
+        .pagination .active { background: #2c3e50; color: #fff; border-color: #2c3e50; }
+        .pagination .disabled { color: #ccc; cursor: not-allowed; }
+
+        .results-meta { text-align: center; font-size: 12px; color: #888; margin-top: 10px; }
         
         footer { margin-top: 40px; padding: 20px; text-align: center; color: #888; font-size: 12px; }
     </style>
@@ -61,22 +58,15 @@
         </div>
     </header>
 
-    <nav class="navbar">
-        <div class="breadcrumb-nav">
-            <a href="/" title="Terug naar homepagina">🏠 Home</a>
-            <span class="separator">/</span>
-            <a href="{{ route('producten.index') }}" title="Terug naar overzicht">📦 Overzicht Geleverde Producten</a>
-            <span class="separator">/</span>
-            <span class="active">📋 Productspecificatie</span>
-        </div>
-    </nav>
-
     <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url('/') }}">Home</a> / <a href="{{ route('producten.index') }}">Overzicht geleverde producten</a> / Specificatie
+        </div>
 
         @if ($errors->any())
             <div class="error">
                 @foreach ($errors->all() as $error)
-                    <p>❌ {{ $error }}</p>
+                    <p>{{ $error }}</p>
                 @endforeach
             </div>
         @endif
@@ -84,82 +74,93 @@
         @if (isset($product))
             <!-- WIREFRAME 03: Product Specification -->
             <div class="detail-section">
-                <h2>📦 {{ $product->Naam }}</h2>
+                <h2>Specificatie geleverde producten</h2>
                 <div class="product-info">
                     <div class="info-row">
-                        <div class="info-label">Leverancier</div>
-                        <div class="info-value">{{ $product->LeverancierNaam }}</div>
+                        <div class="info-label">Startdatum</div>
+                        <div class="info-value">{{ $startDate }}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">Barcode</div>
-                        <div class="info-value">{{ $product->Barcode }}</div>
+                        <div class="info-label">Einddatum</div>
+                        <div class="info-value">{{ $endDate }}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">Aantal Leveringen</div>
-                        <div class="info-value">{{ $deliveryCount }} {{$deliveryCount == 1 ? 'levering' : 'leveringen'}}</div>
+                        <div class="info-label">Productnaam</div>
+                        <div class="info-value">{{ $product->Naam }}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">Totaal Aantal (in periode)</div>
-                        <div class="info-value">{{ $totalQuantity }} stuks</div>
-                    </div>
-                </div>
-
-                <!-- Allergens Section -->
-                @if (count($allergens) > 0)
-                    <div class="allergens">
-                        <h4>⚠️ Allergenen</h4>
-                        <div class="allergen-list">
-                            @foreach ($allergens as $allergen)
-                                <span class="allergen-badge">{{ $allergen->Naam }}</span>
-                            @endforeach
+                        <div class="info-label">Allergenen</div>
+                        <div class="info-value allergens">
+                            @if (count($allergens) > 0)
+                                {{ collect($allergens)->pluck('Naam')->implode(', ') }}
+                            @else
+                                Geen
+                            @endif
                         </div>
                     </div>
-                @else
-                    <div class="allergens">
-                        <h4>✅ Allergenen</h4>
-                        <div class="no-allergens">Dit product bevat geen bekende allergenen</div>
-                    </div>
-                @endif
+                </div>
             </div>
 
             <!-- Delivery Records -->
             <div class="detail-section">
-                <h2>📋 Leveringen ({{ $startDate }} tot {{ $endDate }})</h2>
+                <h2>Leveringen</h2>
 
                 @if ($deliveries && count($deliveries) > 0)
                     <table>
                         <thead>
                             <tr>
-                                <th>Leverancier</th>
+                                <th>Datum levering</th>
                                 <th>Aantal</th>
-                                <th>Verpakking</th>
-                                <th>Datum Levering</th>
-                                <th>Opmerking</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($deliveries as $delivery)
                                 <tr>
-                                    <td>{{ $delivery->LeverancierNaam }}</td>
-                                    <td><strong>{{ $delivery->Aantal }}</strong> stuks</td>
-                                    <td>{{ property_exists($delivery, 'VerpakkingsEenheid') ? $delivery->VerpakkingsEenheid : '-' }}</td>
                                     <td>
                                         @php
                                             $date = \DateTime::createFromFormat('Y-m-d', $delivery->DatumLevering);
                                             echo $date->format('d-m-Y');
                                         @endphp
                                     </td>
-                                    <td>{{ $delivery->Opmerking ?? '-' }}</td>
+                                    <td>{{ $delivery->Aantal }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+
+                    @if ($pagination['last_page'] > 1)
+                        <div class="pagination">
+                            @if ($pagination['current_page'] > 1)
+                                <a href="{{ route('producten.specification', ['productId' => $product->Id, 'startDate' => $startDate, 'endDate' => $endDate, 'page' => 1]) }}">« Eerste</a>
+                                <a href="{{ route('producten.specification', ['productId' => $product->Id, 'startDate' => $startDate, 'endDate' => $endDate, 'page' => $pagination['current_page'] - 1]) }}">‹ Vorige</a>
+                            @else
+                                <span class="disabled">« Eerste</span>
+                                <span class="disabled">‹ Vorige</span>
+                            @endif
+
+                            @for ($i = 1; $i <= $pagination['last_page']; $i++)
+                                @if ($i == $pagination['current_page'])
+                                    <span class="active">{{ $i }}</span>
+                                @else
+                                    <a href="{{ route('producten.specification', ['productId' => $product->Id, 'startDate' => $startDate, 'endDate' => $endDate, 'page' => $i]) }}">{{ $i }}</a>
+                                @endif
+                            @endfor
+
+                            @if ($pagination['current_page'] < $pagination['last_page'])
+                                <a href="{{ route('producten.specification', ['productId' => $product->Id, 'startDate' => $startDate, 'endDate' => $endDate, 'page' => $pagination['current_page'] + 1]) }}">Volgende ›</a>
+                                <a href="{{ route('producten.specification', ['productId' => $product->Id, 'startDate' => $startDate, 'endDate' => $endDate, 'page' => $pagination['last_page']]) }}">Laatste »</a>
+                            @else
+                                <span class="disabled">Volgende ›</span>
+                                <span class="disabled">Laatste »</span>
+                            @endif
+                        </div>
+                        <div class="results-meta">
+                            Getoond {{ $pagination['from'] }} tot {{ $pagination['to'] }} van {{ $pagination['total'] }} resultaten
+                        </div>
+                    @endif
                 @else
                     <div class="no-deliveries">
-                        <p>Geen leveringen gevonden in de geselecteerde periode</p>
-                        <p style="font-size: 13px; color: #aaa; margin-top: 10px;">
-                            Periode: {{ $startDate }} tot {{ $endDate }}
-                        </p>
+                        Geen leveringen gevonden in deze periode.
                     </div>
                 @endif
             </div>
@@ -167,14 +168,14 @@
             <a href="{{ route('producten.index', ['startDate' => $startDate, 'endDate' => $endDate]) }}" class="back-link">← Terug naar Overzicht</a>
         @else
             <div class="error">
-                <p>❌ Product niet gevonden</p>
+                <p>Product niet gevonden</p>
             </div>
             <a href="{{ route('producten.index') }}" class="back-link">← Terug naar Overzicht</a>
         @endif
     </div>
 
     <footer>
-        © Jamin Bedrijf - User Story 01: Overzicht Geleverde Producten (Scenario 02)
+        Jamin Bedrijf
     </footer>
 </body>
 </html>

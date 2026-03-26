@@ -15,7 +15,6 @@
         header a:hover { text-decoration: underline; }
         
         .error-container { text-align: center; padding: 60px 20px; }
-        .error-icon { font-size: 80px; margin-bottom: 20px; }
         .error-title { font-size: 32px; color: #c0392b; margin-bottom: 15px; font-weight: bold; }
         .error-message { font-size: 18px; color: #555; margin-bottom: 30px; line-height: 1.6; }
         .error-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid #c0392b; }
@@ -39,7 +38,6 @@
     <div class="container">
         <!-- WIREFRAME 04: No Results / Error State -->
         <div class="error-container">
-            <div class="error-icon">📦</div>
             <h1 class="error-title">Geen Resultaten</h1>
             <div class="error-message">
                 {{ $message ?? "Er zijn geen leveringen geweest van producten in deze periode" }}
@@ -59,7 +57,7 @@
     </div>
 
     <footer>
-        © Jamin Bedrijf - User Story 01: Overzicht Geleverde Producten (Scenario 03)
+        Jamin Bedrijf
     </footer>
 </body>
 </html>

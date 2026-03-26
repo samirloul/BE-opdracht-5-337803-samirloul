@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\Paginator;
 
 class ProductLeveringController extends Controller
 {
@@ -15,7 +14,7 @@ class ProductLeveringController extends Controller
     {
         $startDateInput = $request->input('startDate');
         $endDateInput = $request->input('endDate');
-        $page = $request->input('page', 1);
+        $page = max(1, (int) $request->input('page', 1));
         
         $hasFilter = $startDateInput && $endDateInput;
         $hasResults = true;
@@ -56,6 +55,7 @@ class ProductLeveringController extends Controller
                 );
                 
                 $products = collect($allProducts);
+                $products = $this->attachContactPersons($products);
                 $totalResults = $products->count();
                 $hasResults = $totalResults > 0;
             } catch (\Exception $e) {
@@ -70,6 +70,7 @@ class ProductLeveringController extends Controller
             );
             
             $products = collect($allProducts);
+            $products = $this->attachContactPersons($products);
             $totalResults = $products->count();
         }
 
@@ -82,7 +83,7 @@ class ProductLeveringController extends Controller
             'per_page' => $perPage,
             'total' => $totalResults,
             'last_page' => max(1, ceil($totalResults / $perPage)),
-            'from' => $offset + 1,
+            'from' => $totalResults > 0 ? $offset + 1 : 0,
             'to' => min($offset + $perPage, $totalResults),
         ];
 
@@ -182,7 +183,7 @@ class ProductLeveringController extends Controller
             'per_page' => $perPage,
             'total' => $totalResults,
             'last_page' => max(1, ceil($totalResults / $perPage)),
-            'from' => $offset + 1,
+            'from' => $totalResults > 0 ? $offset + 1 : 0,
             'to' => min($offset + $perPage, $totalResults),
         ];
 
@@ -213,5 +214,22 @@ class ProductLeveringController extends Controller
             'endDate.date_format' => 'Einddatum moet format dd-mm-yyyy zijn',
             'endDate.after' => 'Einddatum moet na startdatum liggen',
         ]);
+    }
+
+    private function attachContactPersons($products)
+    {
+        if ($products->isEmpty()) {
+            return $products;
+        }
+
+        $leverancierNamen = $products->pluck('LeverancierNaam')->filter()->unique()->values();
+        $contactMap = DB::table('Leverancier')
+            ->whereIn('Naam', $leverancierNamen)
+            ->pluck('ContactPersoon', 'Naam');
+
+        return $products->map(function ($product) use ($contactMap) {
+            $product->ContactPersoon = $contactMap[$product->LeverancierNaam] ?? '-';
+            return $product;
+        });
     }
 }
